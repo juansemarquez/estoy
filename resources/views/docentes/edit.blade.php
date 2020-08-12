@@ -51,6 +51,18 @@
                 <input type="email" class="form-control" name="email" placeholder="Email" value="{{ $docente->user->email }}">
             </div>
         </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-check form-group">
+                <input type="checkbox" class="form-check-input" name="es_directivo"
+                @if ($docente->user->hasRole('directivo'))
+                    checked
+                @endif
+                >
+                <strong>¿Es directivo?</strong>
+           </div>
+        </div>
+
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Agregar cursos:</strong><br>                               
@@ -58,8 +70,8 @@
                     <input type="checkbox" name="agregar_curso[{{ $curso->id }}]">
                     {{ $curso->descripcion }}<br>
                 @endforeach
-
-                <strong>Eliminar de estos cursos:</strong><br>                               
+                <br>
+                <strong>Eliminar de estos cursos:</strong><br>
                 @foreach ($docente->cursos as $curso)
                     <input type="checkbox" name="quitar_curso[{{ $curso->id }}]">
                     {{ $curso->descripcion }}<br>

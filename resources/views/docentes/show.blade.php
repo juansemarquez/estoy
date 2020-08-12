@@ -41,6 +41,15 @@
                 @endif
             </div>
         </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-group">
+                <strong>Roles:</strong> <br>
+                @foreach ($docente->user->roles as $rol)
+                   {{ $rol->description }}<br>
+                @endforeach
+            </div>
+        </div>
         
     </div>
                 </div>

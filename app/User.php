@@ -39,4 +39,41 @@ class User extends Authenticatable
     public function docentes() {
         return $this->HasOne('\App\Docentes');
     }
+    public function roles() {
+        return $this->belongsToMany(Role::class)->withTimestamps();
+    }
+
+    public function authorizeRoles($roles)
+    {
+        abort_unless($this->hasAnyRole($roles), 401);
+        return true;
+    }    
+    
+    public function hasAnyRole($roles)
+    {
+        // Si recibió un array de roles:
+        if (is_array($roles)) {
+            foreach ($roles as $role) {
+                if ($this->hasRole($role)) {
+                    return true;
+                }
+            }
+        } 
+        // Si en cambio, recibió un solo rol:
+        else {
+            if ($this->hasRole($roles)) {
+                 return true; 
+            }   
+        }
+        return false;
+    }
+    
+    public function hasRole($role)
+    {
+        if ($this->roles()->where('name', $role)->first()) {
+            return true;
+        }
+        return false;
+    }
+
 }

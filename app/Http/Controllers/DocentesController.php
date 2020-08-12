@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Docentes;
 use App\User;
 use App\Curso;
+use App\Role;
 use Illuminate\Http\Request;
 
 class DocentesController extends Controller
@@ -49,21 +50,32 @@ class DocentesController extends Controller
 
         //Docentes::create($request->all()); //Revisar que cree usuario antes TODO
         $user = new User;
-        $user->name = substr(trim($request['nombre']),0,1).trim($request ['apellido']);
+
+        //Username: primera letra del nombre más apellido (no es unique).
+        $n = substr(trim($request['nombre']),0,1).trim($request ['apellido']);
+        $user->name = strtolower($n);
+
         $user->password = bcrypt($request['password']);
         $user->email = trim($request['email']);
         $now = new \Datetime();
         $now->modify("+5 minutes");
         $user->email_verified_at = $now->format('Y-m-d H:i:s');
         $user->save();
+        $user->roles()->attach(Role::where('name', 'docente')->first());
+        $user->save();
+        if (isset($request['es_directivo'])) {
+            $user->roles()->attach(Role::where('name', 'directivo')->first());
+        }
+        $user->save();
         $docente = new Docentes;
         $docente->nombre = $request['nombre'];
         $docente->apellido = $request['apellido'];
         $docente->user()->associate($user);
+        $docente->save();
         if (isset($request['curso'])) {
             foreach ($request['curso'] as $id_curso => $noSirve) {
                 $curso = Curso::find($id_curso)->first();
-                $docentes->cursos()->attach($curso);
+                $docente->cursos()->attach($curso);
             }
         }
         
@@ -83,6 +95,8 @@ class DocentesController extends Controller
     {
         $docente = Docentes::find($id);
         $docente->load('cursos');
+        $docente->load('user');
+        $docente->user->load('roles');
         return view('docentes.show',compact('docente'));
     }
 
@@ -142,8 +156,14 @@ class DocentesController extends Controller
                 $docente->cursos()->detach($curso);
             }
         }
-        $user = $docente->user();
+        $user = $docente->user;
         $user->update(['email' => $request['email']]);
+        if (isset($request['es_directivo']) && !$user->hasRole('directivo')) {
+            $user->roles()->attach(Role::where('name', 'directivo')->first());
+        }
+        if (!isset($request['es_directivo']) && $user->hasRole('directivo')) {
+            $user->roles()->detach(Role::where('name', 'directivo')->first());
+        }
 
         return redirect()->route('docentes.index')
                  ->with('success','Datos del docente actualizados con éxito');
@@ -158,7 +178,7 @@ class DocentesController extends Controller
     public function destroy($id)
     {
         $docente = Docentes::findOrFail($id);
-        $user = $docente->user();
+        $user = $docente->user;
         $docente->delete();
         $user->delete();
         return redirect()->route('docentes.index')

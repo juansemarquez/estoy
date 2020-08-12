@@ -48,6 +48,13 @@
                 <input type="email" class="form-control" name="email" placeholder="Email">
             </div>
         </div>
+        
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="es_directivo">
+                <strong>¿Es directivo?</strong>
+            </div>
+        </div>
 
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">

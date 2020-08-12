@@ -18,8 +18,14 @@ class CreateCursoDocentesTable extends Migration
             $table->unsignedBigInteger('docentes_id');
             $table->unsignedBigInteger('curso_id');
             //$table->timestamps();
-            $table->foreign('docentes_id')->references('id')->on('docentes');
-            $table->foreign('curso_id')->references('id')->on('cursos');
+            $table->foreign('docentes_id')
+                  ->references('id')
+                  ->on('docentes')
+                  ->onDelete('cascade');            
+            $table->foreign('curso_id')
+                  ->references('id')
+                  ->on('cursos')
+                  ->onDelete('cascade');            
         });
     }
 
