@@ -10,4 +10,7 @@ class Curso extends Model
     public function docentes() {
         return $this->belongsToMany(Docentes::class); 
     }
+    public function alumnos() {
+        return $this->hasMany(Alumno::class);
+    }
 }
