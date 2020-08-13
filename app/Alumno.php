@@ -11,4 +11,10 @@ class Alumno extends Model
     public function curso() {
         return $this->belongsTo(Curso::class);
     } 
+
+    public function comunicaciones() {
+        return $this->hasMany(Comunicacion::class);
+    }
+
+
 }
