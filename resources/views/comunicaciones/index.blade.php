@@ -28,7 +28,7 @@
             
             @forelse ($unCurso['alumno'] as $alumno)
             <tr> 
-                <td><a href="{{ route('comunicaciones.show', $alumno['id'] ) }}">
+                <td><a href="{{ route('alumnos.show', $alumno['id'] ) }}">
                         {{ $alumno['nombre'] }}
                     </a>
                 </td>

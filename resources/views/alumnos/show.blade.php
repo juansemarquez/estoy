@@ -8,7 +8,7 @@
 
                 <div class="card-body">
             <div class="pull-left">
-                <h2>Datos del estudiante</h2>
+                <h2>Datos del estudiante {{ $alumno->nombre }} {{ $alumno->apellido }}</h2>
             </div>
             <div class="pull-right">
                 <a class="btn btn-primary" href="{{ route('alumnos.index') }}">Volver</a>
@@ -33,6 +33,24 @@
                 <strong>Curso:</strong> {{ $alumno->curso->descripcion }}
             </div>
         </div>
+        @forelse ($alumno->comunicaciones as $comu)
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-group">
+                <strong>El día {{ date('d-m', strtotime($comu->fecha)) }} se comunicó con 
+                {{$comu->docente->nombre}} {{$comu->docente->apellido}}</strong><br>
+                <strong>Observaciones:</strong> {{$comu->observaciones ?? "Sin observaciones"}}<br>
+                <a href="{{ route('comunicaciones.show', $comu->id) }}">Ver detalles</a>
+            </div>
+        </div>
+        @empty
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-group">
+                <strong>No hay comunciaciones </strong><br>
+            </div>
+        </div>
+        @endforelse
+
+    </div>
     </div>
                 </div>
             </div>

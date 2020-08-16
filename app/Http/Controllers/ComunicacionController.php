@@ -118,15 +118,12 @@ class ComunicacionController extends Controller
      * @param  \App\Comunicacion  $comunicacion
      * @return \Illuminate\Http\Response
      */
-    public function show($id_alumno)
+    public function show($id_comunicacion)
     {
-        $alumno = Alumno::whereId($id_alumno)
-            ->with(['comunicaciones.docente',
-                    'comunicaciones' => function($q) {
-                $q->orderBy('fecha','desc');
-            }])
-            ->first();
-        return view('comunicaciones.show',[ 'alumno'=> $alumno ]);
+        $comunicacion = Comunicacion::with([ 'alumno', 'docente'])
+                     ->orderBy('fecha','desc')
+                     ->find($id_comunicacion);
+        return view('comunicaciones.show',[ 'comunicacion'=> $comunicacion ]);
 
     }
 

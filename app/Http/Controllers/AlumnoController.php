@@ -64,6 +64,10 @@ class AlumnoController extends Controller
     public function show(Alumno $alumno)
     {
         $alumno->load('curso');
+        $alumno->load(['comunicaciones.docente',
+                    'comunicaciones' => function($q) {
+                $q->orderBy('fecha','desc');
+            }]);
         return view('alumnos.show',compact('alumno'));
     }
 

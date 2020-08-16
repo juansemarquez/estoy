@@ -7,32 +7,26 @@
                 <div class="card-header">Estoy</div>
 
                 <div class="card-body">
-            <div class="pull-left">
-                <h2>Comunicaciones de <br> {{ $alumno->nombre }} {{$alumno->apellido}}</h2>
-            </div>
-            <div class="pull-right">
-                <a class="btn btn-primary" href="{{ route('comunicaciones.index') }}">Volver</a>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        @forelse ($alumno->comunicaciones as $comu)
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>El día {{ date('d-m', strtotime($comu->fecha)) }} se comunicó con 
-                {{$comu->docente->nombre}} {{$comu->docente->apellido}}</strong><br>
-                Observaciones: {{$comu->observaciones}}
-            </div>
-        </div>
-        @empty
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>No hay comunciaciones </strong><br>
-            </div>
-        </div>
-        @endforelse
+                    <div class="pull-left">
+                        <h2>Comunicación</h2>
+                    </div>
+                    <div class="pull-right">
+                        <a class="btn btn-primary" href="{{ route('comunicaciones.index') }}">Volver</a>
+                    </div>
+                </div>
 
-    </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <h2>Datos de la comunicación:</h2>
+                            <strong>Alumno:</strong> {{$comunicacion->alumno->nombre}} {{ $comunicacion->alumno->apellido }}<br>
+                            <strong>Docente:</strong> {{$comunicacion->docente->nombre}} {{ $comunicacion->docente->apellido }}<br>
+                            <strong>Fecha: </strong> {{ date('d-m', strtotime($comunicacion->fecha)) }}<br>
+                            <strong>Observaciones: </strong> {{ $comunicacion->observaciones ?? "Sin observaciones" }}<br>
+                        </div>
+                    </div>
+
+                    </div>
                 </div>
             </div>
         </div>
