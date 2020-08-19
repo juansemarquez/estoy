@@ -35,31 +35,32 @@ class ComunicacionController extends Controller
         //$cursos->load('alumnos');
         // $cursos->load(['alumnos','alumnos.comunicaciones_por_fecha']);
         // $cursos->loadMissing('alumnos.comunicaciones_por_fecha');
-        //dd($cursos->get());
+        // dd($cursos);
          
         $comunicaciones = array();
         foreach ($cursos as $curso) {
             $x['curso'] = $curso->descripcion;
             $x['alumno'] = array();
             //$x['comunicaciones'] = 
+            $ultimas = Comunicacion::where('fecha','>=', $inicio->format('Y-m-d'));
             $datos =
              \DB::table('alumnos')
-                 ->leftjoin('comunicacions','alumnos.id', "=",'comunicacions.alumno_id')
+                 ->leftJoinSub($ultimas,'c', function($join) {
+                     $join->on('alumnos.id', "=",'c.alumno_id');
+                 })
                  ->select('alumnos.id', 
                           'alumnos.apellido', 
                           'alumnos.nombre', 
-                          'comunicacions.fecha',
-                          \DB::raw('count(comunicacions.id) as cantidad'))
-                  ->where([ 
-                    ['comunicacions.fecha', '>=', $inicio->format('Y-m-d')],
-                    ['alumnos.curso_id', '=', $curso->id]
-                    ])
+                          'c.fecha',
+                          \DB::raw('count(c.id) as cantidad'))
+                  ->where('alumnos.curso_id', '=', $curso->id)
                   ->groupBy('alumnos.id',
                             'alumnos.apellido', 
                             'alumnos.nombre', 
-                            'comunicacions.fecha')
-                   ->orderBy('alumnos.apellido', 'asc')->orderBy('alumnos.nombre','asc')->orderBy('comunicacions.fecha','asc')
+                            'c.fecha')
+                   ->orderBy('alumnos.apellido', 'asc')->orderBy('alumnos.nombre','asc')->orderBy('c.fecha','asc')
                    ->get();
+            //dd($datos);
             $ultima_id = -1; 
             foreach ($datos as $unDato) {
                 if ($unDato->id != $ultima_id) {
@@ -72,10 +73,12 @@ class ComunicacionController extends Controller
                 }
                 $unAlumno['fechas'][$unDato->fecha] = $unDato->cantidad;                               
             }
-            $x['alumno'][]= $unAlumno;
-            $unAlumno = null;
-            $comunicaciones[] = $x;
-            $x = null;
+            if(isset($unAlumno)) {
+                $x['alumno'][]= $unAlumno;
+                $unAlumno = null;
+                $comunicaciones[] = $x;
+                $x = null;
+            }
         }
         $cursos = null;
         //dd($comunicaciones);
