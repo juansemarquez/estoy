@@ -17,7 +17,7 @@ class ComunicacionController extends Controller
      */
     public function index()
     {
-        if(Auth::user()->role === 'directivo') {
+        if(Auth::user()->hasRole('directivo')){
             $cursos = Curso::all();
         }
         else {
@@ -37,60 +37,42 @@ class ComunicacionController extends Controller
         // $cursos->loadMissing('alumnos.comunicaciones_por_fecha');
         // dd($cursos);
          
-        $comunicaciones = array();
+        $id_cursos = [];
         foreach ($cursos as $curso) {
-            $x['curso'] = $curso->descripcion;
-            $x['alumno'] = array();
-            //$x['comunicaciones'] = 
-            $ultimas = Comunicacion::where('fecha','>=', $inicio->format('Y-m-d'));
-            $datos =
-             \DB::table('alumnos')
+            $id_cursos[] = $curso->id;
+        }
+
+        $ultimas = Comunicacion::where('fecha','>=', $inicio->format('Y-m-d'));
+        $datos = \DB::table('alumnos')
                  ->leftJoinSub($ultimas,'c', function($join) {
                      $join->on('alumnos.id', "=",'c.alumno_id');
                  })
                  ->select('alumnos.id', 
+                          'alumnos.curso_id',
                           'alumnos.apellido', 
                           'alumnos.nombre', 
                           'c.fecha',
                           \DB::raw('count(c.id) as cantidad'))
-                  ->where('alumnos.curso_id', '=', $curso->id)
-                  ->groupBy('alumnos.id',
+                  ->whereIn('alumnos.curso_id', $id_cursos)
+                  ->groupBy('alumnos.curso_id',
+                            'alumnos.id',
                             'alumnos.apellido', 
                             'alumnos.nombre', 
                             'c.fecha')
-                   ->orderBy('alumnos.apellido', 'asc')->orderBy('alumnos.nombre','asc')->orderBy('c.fecha','asc')
-                   ->get();
-            //dd($datos);
-            $ultima_id = -1; 
-            foreach ($datos as $unDato) {
-                if ($unDato->id != $ultima_id) {
-                    if (isset($unAlumno)) {$x['alumno'][]= $unAlumno;}
-                    $unAlumno = array();
-                    $unAlumno['id'] = $unDato->id;
-                    $ultima_id = $unDato->id;
-                    $unAlumno['nombre'] = $unDato->apellido . "," . $unDato->nombre;
-                    $unAlumno['fechas'] = array();
-                }
-                $unAlumno['fechas'][$unDato->fecha] = $unDato->cantidad;                               
-            }
-            if(isset($unAlumno)) {
-                $x['alumno'][]= $unAlumno;
-                $unAlumno = null;
-                $comunicaciones[] = $x;
-                $x = null;
-            }
-        }
-        $cursos = null;
-        //dd($comunicaciones);
-        
-    
+                  ->orderBy('alumnos.curso_id')
+                  ->orderBy('alumnos.apellido', 'asc')
+                  ->orderBy('alumnos.nombre','asc')
+                  ->orderBy('c.fecha','asc')
+                  ->get();
+        $datos = $datos->groupBy(['curso_id','id']);        
         $intervalo = [ $inicio->format("Y-m-d") => $inicio->format("d/m") ];
         while ( $inicio <= $hoy ) {
             $inicio->modify('+1 day');
             $intervalo[$inicio->format("Y-m-d")] = $inicio->format("d/m");
         }
-        // dd($intervalo);
-        return view('comunicaciones.index',['comunicaciones'=> $comunicaciones,
+
+        return view('comunicaciones.index',['comunicaciones'=> $datos,
+                                            'cursos' => $cursos,
                                             'intervalo' => $intervalo ]);
     }
 

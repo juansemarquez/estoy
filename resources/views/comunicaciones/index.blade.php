@@ -15,8 +15,8 @@
             <p>{{ $message }}</p>
         </div>
     @endif
-    @foreach ($comunicaciones as $unCurso)     
-        <h2>{{ $unCurso['curso'] }}</h2>
+    @foreach ($cursos as $unCurso)     
+        <h2>{{ $unCurso['descripcion'] }}</h2>
         <table class="table table-bordered table-striped text-center">
             <tr>
                 <th>Apellido y Nombre</th>                
@@ -25,18 +25,17 @@
                 @endforeach
             </tr>
             
-            
-            @forelse ($unCurso['alumno'] as $alumno)
+            @forelse ($comunicaciones[$unCurso->id] as $id => $alumno)
             <tr> 
-                <td><a href="{{ route('alumnos.show', $alumno['id'] ) }}">
-                        {{ $alumno['nombre'] }}
+                <td><a href="{{ route('alumnos.show', $id ) }}">
+                        {{ $alumno[0]->nombre }} {{ $alumno[0]->apellido }}
                     </a>
                 </td>
                 @foreach ($intervalo as $unaFecha => $sinUso)
-                    @if (!isset($alumno['fechas'][$unaFecha]))
+                    @if (!$alumno->firstWhere('fecha','=',$unaFecha))
                         <td>0</td>
                     @else
-                        <td>{{ $alumno['fechas'][$unaFecha] }}</td>
+                        <td>{{ $alumno->firstWhere('fecha','=',$unaFecha)->cantidad }}</td>
                     @endif
                 @endforeach
             </tr>
