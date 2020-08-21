@@ -13,11 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Auth::routes();
+Route::get('/', 'HomeController@index')->name('home')->middleware('auth');
+Route::post('/', 'HomeController@create')->name('crear_comunicacion')->middleware('auth');
+Auth::routes(['register' => false]);
+//Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 Route::resource('cursos','CursoController')->middleware('auth');

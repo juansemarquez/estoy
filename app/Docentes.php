@@ -21,4 +21,7 @@ class Docentes extends Model
    public function cursosQueNoTiene() {
        return Curso::all()->diff($this->cursos());
    }
+   public function comunicaciones() {
+       return $this->hasMany('App\Comunicacion', 'docente_id');
+   }
 }
