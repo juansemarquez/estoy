@@ -1,0 +1,12 @@
+{
+    "Login" : "Iniciar sesión",
+    "Remember Me": "Recordarme en este equipo",
+    "Forgot Your Password?": "No me acuerdo la contraseña...",
+    "E-Mail Address": "Correo electrónico",
+    "Password": "Contraseña",
+    "Reset Password": "Crear contraseña nueva",
+    "Send Password Reset Link": "Enviar enlace para nueva contraseña",
+    "Logout": "Cerrar sesión"
+
+
+}
