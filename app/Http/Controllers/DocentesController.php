@@ -17,6 +17,7 @@ class DocentesController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Docentes::class);
         $docentes = Docentes::with('user')->get();
         return view('docentes.index',compact('docentes'));
     }
@@ -28,6 +29,7 @@ class DocentesController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Docentes::class);
         $cursos = Curso::all();
         return view('docentes.create', ['cursos' => $cursos ]);
     }
@@ -40,6 +42,7 @@ class DocentesController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Docentes::class);
         $request->validate([
             'nombre' => 'required',
             'apellido' => 'required',
@@ -94,6 +97,7 @@ class DocentesController extends Controller
     public function show($id)
     {
         $docente = Docentes::find($id);
+        $this->authorize('view', $docente);
         $docente->load('cursos');
         $docente->load('user');
         $docente->user->load('roles');
@@ -109,6 +113,7 @@ class DocentesController extends Controller
     public function edit($id)
     {
         $docente = Docentes::find($id);
+        $this->authorize('update', $docente);
         $docente->load('user');
         $docente->load('cursos');
         if (count($docente->cursos) == 0) {
@@ -134,12 +139,13 @@ class DocentesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $docente = Docentes::findOrFail($id);
+        $this->authorize('update', $docente);
         $request->validate([
             'nombre' => 'required',
             'apellido' => 'required',
             'email' => 'required',
         ]);
-        $docente = Docentes::findOrFail($id);
         $docente->update(['nombre'=>$request['nombre'],
                            'apellido' => $request['apellido']
                           ]);
@@ -178,6 +184,7 @@ class DocentesController extends Controller
     public function destroy($id)
     {
         $docente = Docentes::findOrFail($id);
+        $this->authorize('delete', $docente);
         $user = $docente->user;
         $docente->delete();
         $user->delete();

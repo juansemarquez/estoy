@@ -118,9 +118,10 @@ class ComunicacionController extends Controller
      * @param  \App\Comunicacion  $comunicacion
      * @return \Illuminate\Http\Response
      */
-    public function edit(Comunicacion $comunicacion)
+    public function edit($comunicacion)
     {
-        //
+        $comunicacion = Comunicacion::find($comunicacion)->load(['docente','alumno']);
+        $this->authorize('update',$comunicacion);
     }
 
     /**
@@ -132,7 +133,7 @@ class ComunicacionController extends Controller
      */
     public function update(Request $request, Comunicacion $comunicacion)
     {
-        //
+        $this->authorize('update',$comunicacion);
     }
 
     /**
@@ -143,6 +144,6 @@ class ComunicacionController extends Controller
      */
     public function destroy(Comunicacion $comunicacion)
     {
-        //
+        $this->authorize('update',$comunicacion);
     }
 }

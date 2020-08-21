@@ -10,9 +10,11 @@
             <div class="pull-left">
                 <h2>Estoy - Gestión de docentes</h2>
             </div>
+            @can('create',App\Docentes::class)
             <div class="pull-right">
                 <a class="btn btn-success" href="{{ route('docentes.create') }}"> Crear nuevo docente</a>
             </div>
+            @endcan
         </div>
     </div>
     @if ($message = Session::get('success'))
@@ -33,13 +35,21 @@
             <td>{{ $docente->apellido }}</td>
             <td>{{ $docente->user->email }}</td>
             <td>
+            @can('delete',$docente)
                 <form action="{{ route('docentes.destroy',$docente->id) }}" method="POST">
+            @endcan
+            @can('view',$docente)
                     <a class="btn btn-info" href="{{ route('docentes.show',$docente->id) }}">Mostrar</a>
+            @endcan
+            @can('update',$docente)
                     <a class="btn btn-primary" href="{{ route('docentes.edit',$docente->id) }}">Editar</a>
+            @endcan
+            @can('delete',$docente)
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">Eliminar</button>
                 </form>
+            @endcan
             </td>
         </tr>
         @endforeach

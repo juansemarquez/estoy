@@ -10,9 +10,11 @@
             <div class="pull-left">
                 <h2>Estoy - Gestión de estudiantes</h2>
             </div>
+            @can('create',App\Alumno::class)
             <div class="pull-right">
                 <a class="btn btn-success" href="{{ route('alumnos.create') }}">Crear nuevo estudiante</a>
             </div>
+            @endcan
         </div>
     </div>
     @if ($message = Session::get('success'))
@@ -33,6 +35,7 @@
                 <td>{{ $alumno->nombre }}</td>
                 <td>{{ $alumno->apellido }}</td>
                 <td>
+                    @can('delete', $alumno)
                     <form action="{{ route('alumnos.destroy',$alumno->id) }}" method="POST">
                         <a class="btn btn-info" href="{{ route('alumnos.show',$alumno->id) }}">Mostrar</a>
                         <a class="btn btn-primary" href="{{ route('alumnos.edit',$alumno->id) }}">Editar</a>
@@ -40,6 +43,9 @@
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Eliminar</button>
                     </form>
+                    @else
+                        <a class="btn btn-info" href="{{ route('alumnos.show',$alumno->id) }}">Mostrar</a>
+                    @endcan
                 </td>
             </tr>
             @empty

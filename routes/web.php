@@ -19,8 +19,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-Route::resource('cursos','CursoController');
-Route::resource('docentes','DocentesController');
-Route::resource('alumnos','AlumnoController');
-Route::resource('comunicaciones','ComunicacionController');
+Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
+Route::resource('cursos','CursoController')->middleware('auth');
+Route::resource('docentes','DocentesController')->middleware('auth');
+Route::resource('alumnos','AlumnoController')->middleware('auth');
+Route::resource('comunicaciones','ComunicacionController')->middleware('auth');

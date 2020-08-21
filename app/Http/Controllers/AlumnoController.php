@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Alumno;
 use App\Curso;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AlumnoController extends Controller
 {
@@ -15,7 +16,12 @@ class AlumnoController extends Controller
      */
     public function index()
     {
-        $cursos = Curso::all();
+        if(Auth::user()->hasRole('directivo')){
+            $cursos = Curso::all();
+        }
+        else {
+            $cursos = Auth::user()->docentes->cursos;
+        }
         $cursos->load('alumnos');
         return view('alumnos.index',['cursos'=>$cursos]);
     }
@@ -27,6 +33,7 @@ class AlumnoController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Alumno::class);
         $cursos = Curso::all();
         return view('alumnos.create',compact('cursos'));
     }
@@ -39,6 +46,7 @@ class AlumnoController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', $alumno);
         $request->validate([
             'nombre' => 'required',
             'apellido' => 'required',
@@ -63,6 +71,7 @@ class AlumnoController extends Controller
      */
     public function show(Alumno $alumno)
     {
+        $this->authorize('view', $alumno);
         $alumno->load('curso');
         $alumno->load(['comunicaciones.docente',
                     'comunicaciones' => function($q) {
@@ -79,6 +88,7 @@ class AlumnoController extends Controller
      */
     public function edit(Alumno $alumno)
     {
+        $this->authorize('update', $alumno);
         $alumno->load('curso');
         $cursos = Curso::all();
         return view('alumnos.edit',[ 'alumno'=>$alumno, 'cursos'=>$cursos ]);
@@ -93,6 +103,7 @@ class AlumnoController extends Controller
      */
     public function update(Request $request, Alumno $alumno)
     {
+        $this->authorize('update', $alumno);
         $request->validate([
             'curso' => 'required',
             'nombre' => 'required',
@@ -120,6 +131,7 @@ class AlumnoController extends Controller
      */
     public function destroy(Alumno $alumno)
     {
+        $this->authorize('delete', $alumno);
         $alumno->delete();
         return redirect()->route('alumnos.index')
                         ->with('success','Alumno eliminado con éxito');  
