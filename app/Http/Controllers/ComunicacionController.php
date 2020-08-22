@@ -94,7 +94,7 @@ class ComunicacionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**

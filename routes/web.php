@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', 'HomeController@index')->name('home')->middleware('auth');
-Route::post('/', 'HomeController@create')->name('crear_comunicacion')->middleware('auth');
+Route::post('/', 'HomeController@store')->name('crear_comunicacion')->middleware('auth');
 Auth::routes(['register' => false]);
 //Auth::routes();
 

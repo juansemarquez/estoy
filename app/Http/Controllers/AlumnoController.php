@@ -46,7 +46,7 @@ class AlumnoController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create', $alumno);
+        $this->authorize('create', Alumno::class);
         $request->validate([
             'nombre' => 'required',
             'apellido' => 'required',

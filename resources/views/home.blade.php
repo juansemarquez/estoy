@@ -12,10 +12,15 @@
                             {{ session('status') }}
                         </div>
                     @endif
+                    @if ($message = Session::get('success'))
+                        <div class="alert alert-success text-center">
+                            <p>{{ $message }}</p>
+                        </div>
+                    @endif
                     <form action={{ route('crear_comunicacion')}} method="POST" class="text-center">
                        @csrf
                        <label for="alumno">¿Quién se comunicó con vos, {{ $nombre }}?</label><br>
-                       <input name="alumno" list="datalist" id="input-alumno" oninput="tipearNombre(this)">
+                       <input name="alumno" list="datalist" id="input-alumno" autocomplete="off" oninput="tipearNombre(this)">
                        <datalist id="datalist">
                         @foreach ($alumnos as $alumno) 
                             <option data-value="{{$alumno[0]}}" value="{{$alumno[1]}}" />

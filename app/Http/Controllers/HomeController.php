@@ -53,4 +53,24 @@ class HomeController extends Controller
             'comus'=>$comus
         ]);
     }
+    public function store(Request $request)
+    {
+        $request->validate([
+            'id_alumno' => 'required|numeric',
+            'fecha' => 'date|required',
+        ]);
+        $alumno = \App\Alumno::findOrFail($request['id_alumno']);
+        $fecha = new \DateTime($request['fecha']);
+
+        $c = new \App\Comunicacion();
+        $c->fecha = $fecha;
+        $c->observaciones = isset($request['observaciones'])?$observaciones:null;
+        $c->alumno()->associate($alumno);
+        $c->docente()->associate(Auth::user()->docentes()->first());
+        $this->authorize('create',$c);
+        $c->save();
+        return redirect()->route('home')
+                        ->with('success','Comunicación guardada con éxito.');
+        
+    }
 }
