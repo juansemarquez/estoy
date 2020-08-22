@@ -73,7 +73,10 @@ class ComunicacionController extends Controller
 
         return view('comunicaciones.index',['comunicaciones'=> $datos,
                                             'cursos' => $cursos,
-                                            'intervalo' => $intervalo ]);
+                                            'intervalo' => $intervalo,
+                                            'inicio' => reset($intervalo),
+                                            'fin' => end($intervalo)
+                                         ]);
     }
 
     /**

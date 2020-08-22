@@ -19,20 +19,34 @@
                     @endif
                     <form action={{ route('crear_comunicacion')}} method="POST" class="text-center">
                        @csrf
+                        <div class="form-group">
                        <label for="alumno">¿Quién se comunicó con vos, {{ $nombre }}?</label><br>
-                       <input name="alumno" list="datalist" id="input-alumno" autocomplete="off" oninput="tipearNombre(this)">
+                       <input name="alumno" class="form-control form-control-lg" list="datalist" id="input-alumno" autocomplete="off" oninput="tipearNombre(this)" placeholder="Nombre del estudiante">
                        <datalist id="datalist">
                         @foreach ($alumnos as $alumno) 
                             <option data-value="{{$alumno[0]}}" value="{{$alumno[1]}}" />
                         @endforeach
                         </datalist>                    
                         <input type="hidden" name="id_alumno" id="id_alumno">
-                        <br> <br>
+                        </div>
+
+                        <div class="form-group">
                         <label for="fecha">Fecha:</label>
                         <input type="date" name="fecha" id="fecha" value="{{$hoy}}"><br>
-                        <input type="submit" value="Enviar">                  
+                        </div>
+
+                        <div class="form-group">
+                        <input type="text" class="form-control form-control-lg" name="observaciones" id="observaciones" placeholder="Observaciones (opcional)"><br><br>
+                        </div>
+
+                        <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Enviar">                  
+                        </div>
                     </form>
                     </div>
+                </div><br>
+                <div class="text-center">
+                    <a class="btn btn-primary" href="{{route('comunicaciones.index')}}">Ver todas las comunicaciones</a>
                 </div><br>
             <div class="card">
                 <div class="card-body">

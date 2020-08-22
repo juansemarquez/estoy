@@ -4,7 +4,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Estoy</div>
+                <div class="card-header">&nbsp;</div>
 
                 <div class="card-body">
             <div class="pull-left">
@@ -16,16 +16,17 @@
         </div>
     @endif
     @foreach ($cursos as $unCurso)     
-        <h2>{{ $unCurso['descripcion'] }}</h2>
+        <h2>{{ $unCurso['descripcion'] }} ({{ ($inicio) }} a {{ $fin }})</h2>
         <table class="table table-bordered table-striped text-center">
             <tr>
                 <th>Apellido y Nombre</th>                
                 @foreach ($intervalo as $fecha)
-                <th>{{ $fecha }}</th>
+                <th class="d-none d-md-table-cell">{{ $fecha }}</th>
                 @endforeach
+                <th>Total</th>
             </tr>
-            
             @forelse ($comunicaciones[$unCurso->id] as $id => $alumno)
+            @php $total = 0; @endphp
             <tr> 
                 <td><a href="{{ route('alumnos.show', $id ) }}">
                         {{ $alumno[0]->nombre }} {{ $alumno[0]->apellido }}
@@ -33,11 +34,30 @@
                 </td>
                 @foreach ($intervalo as $unaFecha => $sinUso)
                     @if (!$alumno->firstWhere('fecha','=',$unaFecha))
-                        <td>0</td>
+                        <td class="d-none d-md-table-cell">0</td>
                     @else
-                        <td>{{ $alumno->firstWhere('fecha','=',$unaFecha)->cantidad }}</td>
+                        @php 
+                            $cantidad = $alumno->firstWhere('fecha','=',$unaFecha)->cantidad;
+                            $total += $cantidad;
+                        @endphp
+                        <td class="d-none d-md-table-cell">{{$cantidad}}</td>                        
                     @endif
                 @endforeach
+                <td class="
+               @if ($total > 3)
+                   bg-success
+               @elseif ($total == 3)
+                   bg-info
+               @elseif ($total == 2)
+                   bg-secondary
+               @elseif ($total == 1)
+                   bg-warning
+               @elseif ($total == 0)
+                   bg-danger
+               @else 
+                   bg-light
+               @endif
+               ">{{$total}}</td>
             </tr>
             @empty
             <tr><td colspan="7" class="text-center">No hay estudiantes en este curso</td></tr>
