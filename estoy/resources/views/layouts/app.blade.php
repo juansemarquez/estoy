@@ -55,6 +55,22 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    @can('create',App\Curso::class)
+                                        <a class="dropdown-item" href="{{ route('cursos.index') }}">
+                                            Gestión de cursos
+                                        </a>
+                                    @endcan
+                                    @can('create',App\Docentes::class)
+                                        <a class="dropdown-item" href="{{ route('docentes.index') }}">
+                                            Gestión de docentes
+                                        </a>
+                                    @endcan
+                                    @can('create',App\Alumno::class)
+                                        <a class="dropdown-item" href="{{ route('alumnos.index') }}">
+                                            Gestión de alumnos
+                                        </a>
+                                    @endcan
+                                            
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
