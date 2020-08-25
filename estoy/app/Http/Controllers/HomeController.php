@@ -37,7 +37,7 @@ class HomeController extends Controller
             }
             $alumnos = \App\Alumno::whereIn('curso_id',$id_cursos)->with('curso')->orderBy('apellido')->get();
         }
-        $comus = $docente->comunicaciones()->orderBy('fecha','desc')->take(5)->get();
+        $comus = $docente->comunicaciones()->orderBy('created_at','desc')->take(5)->get();
         $datalist=[];
         foreach ($alumnos as $a) {
             $dato = $a->apellido . ", " . $a->nombre . " (" . $a->curso->curso;
@@ -64,13 +64,22 @@ class HomeController extends Controller
 
         $c = new \App\Comunicacion();
         $c->fecha = $fecha;
-        $c->observaciones = isset($request['observaciones'])?$observaciones:null;
+        $c->observaciones = isset($request['observaciones'])?$request['observaciones']:null;
         $c->alumno()->associate($alumno);
         $c->docente()->associate(Auth::user()->docentes()->first());
         $this->authorize('create',$c);
-        $c->save();
+        if(\App\Comunicacion::where('alumno_id',$c->alumno->id)
+            ->where('docente_id',$c->docente->id)
+            ->where('fecha',$c->fecha)
+            ->count() === 0 )  {
+                $c->save();
         return redirect()->route('home')
                         ->with('success','Comunicación guardada con éxito.');
+        }
+        else {
+            return redirect()->route('home')
+                        ->with('error','Ya había una comunicación guardada ese día entre ese estudiante y ese docente.');
+        }
         
     }
 }

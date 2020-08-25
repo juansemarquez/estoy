@@ -17,6 +17,11 @@
                             <p>{{ $message }}</p>
                         </div>
                     @endif
+                    @if ($message = Session::get('error'))
+                        <div class="alert alert-danger text-center">
+                            <p>{{ $message }}</p>
+                        </div>
+                    @endif
                     <form action={{ route('crear_comunicacion')}} method="POST" class="text-center">
                        @csrf
                         <div class="form-group">

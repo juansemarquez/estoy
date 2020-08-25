@@ -4,6 +4,7 @@
 /estoy/storage/*.key
 /estoy/vendor
 /estoy/.env
+/estoy/.envLOCAL
 /estoy/.env.backup
 /estoy/.phpunit.result.cache
 /estoy/Homestead.json
