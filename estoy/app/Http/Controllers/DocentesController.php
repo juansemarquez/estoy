@@ -77,7 +77,7 @@ class DocentesController extends Controller
         $docente->save();
         if (isset($request['curso'])) {
             foreach ($request['curso'] as $id_curso => $noSirve) {
-                $curso = Curso::find($id_curso)->first();
+                $curso = Curso::find($id_curso);
                 $docente->cursos()->attach($curso);
             }
         }
