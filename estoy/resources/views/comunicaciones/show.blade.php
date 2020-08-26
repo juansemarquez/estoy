@@ -23,6 +23,13 @@
                             <strong>Docente:</strong> {{$comunicacion->docente->nombre}} {{ $comunicacion->docente->apellido }}<br>
                             <strong>Fecha: </strong> {{ date('d-m', strtotime($comunicacion->fecha)) }}<br>
                             <strong>Observaciones: </strong> {{ $comunicacion->observaciones ?? "Sin observaciones" }}<br>
+                            @can('update', $comunicacion)   
+                            <p class="text-center">
+                                <a class="btn btn-primary" href="{{route('comunicaciones.edit', $comunicacion)}}">
+                                    Modificar la comunicacion
+                                </a>
+                            </p>
+                            @endcan
                         </div>
                     </div>
 

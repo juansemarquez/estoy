@@ -63,6 +63,7 @@
                                 {{$comu->alumno->apellido}},
                                 {{$comu->alumno->nombre}}                                
                                 ({{ date('d-m', strtotime($comu->fecha)) }})
+                                <a href="{{route('comunicaciones.edit',$comu)}}">Modificar</a>
                             </li>
                         @empty
                             <li>Aún no cargaste comunicaciones</li>

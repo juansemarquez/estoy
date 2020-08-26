@@ -125,6 +125,25 @@ class ComunicacionController extends Controller
     {
         $comunicacion = Comunicacion::find($comunicacion)->load(['docente','alumno']);
         $this->authorize('update',$comunicacion);
+        $comunicacion->load(['alumno','docente']); 
+        if(Auth::user()->hasRole('directivo')){
+            $docentes = \App\Docentes::all();
+            $alumnos= \App\Alumno::with('curso')->orderBy('apellido')->get();
+        }
+        else {
+            $docentes = [ $comunicacion->docente ];
+
+            //FIXME: Debe haber una manera mejor
+            $id_cursos = array();
+            foreach ($comunicacion->docente->cursos as $curso) {
+                $id_cursos[] = $curso->id;
+            }
+            $alumnos = \App\Alumno::whereIn('curso_id',$id_cursos)->with('curso')->orderBy('apellido')->get();
+        }
+            
+        return view('comunicaciones.edit',[ 'comunicacion' => $comunicacion,
+                                            'docentes' => $docentes,
+                                            'alumnos' => $alumnos ]);
     }
 
     /**
@@ -134,9 +153,34 @@ class ComunicacionController extends Controller
      * @param  \App\Comunicacion  $comunicacion
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Comunicacion $comunicacion)
+    public function update(Request $request, $comunicacion)
     {
+        $comunicacion = Comunicacion::find($comunicacion);
         $this->authorize('update',$comunicacion);
+
+        $request->validate([
+            'id_alumno' => 'required|numeric',
+            'fecha' => 'required|date',
+            'docente' => 'required|numeric'
+        ]);
+
+        $fecha = new \DateTime($request['fecha']);
+        $comunicacion->update([
+            'fecha' => $fecha,
+            'observaciones' => $request['observaciones']
+        ]);
+        if ($comunicacion->alumno_id != $request['id_alumno']) {
+            $alumno = \App\Alumno::findOrFail($request['id_alumno']);
+            $comunicacion->alumno()->dissociate();
+            $comunicacion->alumno()->associate($alumno);
+        }
+        if(Auth::user()->hasRole('directivo') && 
+                          $comunicacion->docentes_id != $request['docente'] ) {
+            $docente = \App\Docentes::findOrFail($request['docente']);
+            $comunicacion->docente()->dissociate();
+            $comunicacion->docente()->associate($docente);
+        }
+        $comunicacion->save();     
     }
 
     /**
@@ -145,8 +189,12 @@ class ComunicacionController extends Controller
      * @param  \App\Comunicacion  $comunicacion
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Comunicacion $comunicacion)
+    public function destroy($comunicacion)
     {
-        $this->authorize('update',$comunicacion);
+        $comunicacion = Comunicacion::find($comunicacion);
+        $this->authorize('delete',$comunicacion);
+        $comunicacion->delete();
+        return redirect()->route('home')
+                        ->with('success','Comunicación eliminada con éxito');  
     }
 }
