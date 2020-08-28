@@ -6,7 +6,14 @@
     "Password": "Contraseña",
     "Reset Password": "Crear contraseña nueva",
     "Send Password Reset Link": "Enviar enlace para nueva contraseña",
-    "Logout": "Cerrar sesión"
+    "Logout": "Cerrar sesión",
+    "We have emailed your password reset link!":"Te enviamos un mail para cambiar la contraseña",
+    "Hello!":"¡Hola!",
+    "You are receiving this email because we received a password reset request for your account.":"Estás recibiendo este mail porque alguien solicitó reiniciar tu contraseña",
+   "This password reset link will expire in 60 minutes":"Este enlace se autodestruirá en 60 minutos",
+  "If you did not request a password reset, no further action is required.": "Si no fuiste vos el que solicitó reestablecer la contraseña, no hace falta que hagas nada",
+  "Regards":"¡Saludos!",
+  "Reset Password Notification":"Reestablecer contraseña"
 
 
 }
