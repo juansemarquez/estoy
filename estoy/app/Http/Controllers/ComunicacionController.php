@@ -15,7 +15,20 @@ class ComunicacionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index() {
+        return $this->listado();
+    }
+
+    public function listado_desde(Request $request)
+    {
+        $request->validate([
+            'desde' => 'required|date'
+        ]);
+        return $this->listado($request['desde']);
+    }
+
+
+    public function listado($inicio = null)
     {
         if(Auth::user()->hasRole('directivo')){
             $cursos = Curso::all();
@@ -26,11 +39,19 @@ class ComunicacionController extends Controller
 
         //TODO: Todo esto hay que moverlo a otra parte, ¿modelo? 
         
-        $hoy = new \DateTime();
 
-
-        $inicio = new \DateTime();
-        $inicio->modify('-6 days');
+        if (is_null($inicio)) {
+            $inicio = new \DateTime(date("Y-m-d"));
+            $inicio->modify('-6 days');
+            $fin = new \DateTime(date("Y-m-d"));
+        }
+        else {
+            $fin = new \DateTime($inicio);
+            $fin->modify('+6 days');
+            $inicio = new \DateTime($inicio);
+            
+            
+        }
         // $cursos->load('alumnos.comunicaciones_por_fecha')->where('fecha','>=',$inicio->format("Y-m-d"));
         //$cursos->load('alumnos');
         // $cursos->load(['alumnos','alumnos.comunicaciones_por_fecha']);
@@ -66,11 +87,10 @@ class ComunicacionController extends Controller
                   ->get();
         $datos = $datos->groupBy(['curso_id','id']);        
         $intervalo = [ $inicio->format("Y-m-d") => $inicio->format("d/m") ];
-        while ( $inicio <= $hoy ) {
+        while ( $inicio < $fin ) {
             $inicio->modify('+1 day');
             $intervalo[$inicio->format("Y-m-d")] = $inicio->format("d/m");
         }
-
         return view('comunicaciones.index',['comunicaciones'=> $datos,
                                             'cursos' => $cursos,
                                             'intervalo' => $intervalo,

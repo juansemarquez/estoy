@@ -15,6 +15,15 @@
             <p>{{ $message }}</p>
         </div>
     @endif
+    <div>
+      <form action="{{route('comunicaciones.listado')}}" method="post">
+        @csrf
+        <label for="desde">Mostrar una semana desde el:</label> 
+        <input type="date" name="desde" id="desde" oninput="habilitar_boton_redirigir(this.value)">
+        <input type="submit" class="btn btn-primary" id="boton_redirigir" disabled value="Mostrar">
+      </form>
+    </div>
+<br><br>
     @foreach ($cursos as $unCurso)     
         <h2>{{ $unCurso['descripcion'] }} ({{ ($inicio) }} a {{ $fin }})</h2>
         <table class="table table-bordered table-striped text-center">
@@ -71,4 +80,14 @@
         </div>
     </div>
 </div>
+<script>
+function habilitar_boton_redirigir(valor) {
+    if(valor == null || valor == undefined || valor=='') {
+        document.querySelector('#boton_redirigir').disabled = true;
+    }
+    else {
+        document.querySelector('#boton_redirigir').disabled = false;
+    }
+}
+</script>
 @endsection
