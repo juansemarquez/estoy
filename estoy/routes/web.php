@@ -23,4 +23,5 @@ Route::resource('cursos','CursoController')->middleware('auth');
 Route::resource('docentes','DocentesController')->middleware('auth');
 Route::resource('alumnos','AlumnoController')->middleware('auth');
 Route::resource('comunicaciones','ComunicacionController')->middleware('auth');
+Route::resource('posts','PostController')->middleware('auth');
 Route::post('/comunicaciones_desde', 'ComunicacionController@listado_desde')->name('comunicaciones.listado')->middleware('auth');
