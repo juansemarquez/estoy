@@ -55,6 +55,7 @@ class HomeController extends Controller
     }
     public function store(Request $request)
     {
+        dd($request);
         $request->validate([
             'id_alumno' => 'required|numeric',
             'fecha' => 'date|required',

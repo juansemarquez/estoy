@@ -22,7 +22,7 @@
                             <p>{{ $message }}</p>
                         </div>
                     @endif
-                    <form action={{ route('crear_comunicacion')}} method="POST" class="text-center">
+                    <form action="{{route('crear_comunicacion')}}" method="POST" class="text-center">
                        @csrf
                         <div class="form-group">
                        <label for="alumno">¿Quién se comunicó con vos, {{ $nombre }}?</label><br>

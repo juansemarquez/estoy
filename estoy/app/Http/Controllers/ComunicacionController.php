@@ -106,7 +106,37 @@ class ComunicacionController extends Controller
      */
     public function create()
     {
-        //
+
+    }
+
+    public function store2(Request $request)
+    {
+        $request->validate([
+            'id_alumno' => 'required|numeric',
+            'fecha' => 'date|required',
+        ]);
+        $alumno = \App\Alumno::findOrFail($request['id_alumno']);
+        $fecha = new \DateTime($request['fecha']);
+
+        $c = new \App\Comunicacion();
+        $c->fecha = $fecha;
+        $c->observaciones = isset($request['observaciones'])?$request['observaciones']:null;
+        $c->alumno()->associate($alumno);
+        $c->docente()->associate(Auth::user()->docentes()->first());
+        $this->authorize('create',$c);
+        if(\App\Comunicacion::where('alumno_id',$c->alumno->id)
+            ->where('docente_id',$c->docente->id)
+            ->where('fecha',$c->fecha)
+            ->count() === 0 )  {
+                $c->save();
+        return redirect()->route('home')
+                        ->with('success','Comunicación guardada con éxito.');
+        }
+        else {
+            return redirect()->route('home')
+                        ->with('error','Ya había una comunicación guardada ese día entre ese estudiante y ese docente.');
+        }
+        
     }
 
     /**
