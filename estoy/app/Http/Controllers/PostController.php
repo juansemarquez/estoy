@@ -41,14 +41,23 @@ class PostController extends Controller
         $request->validate([
             'titulo' => 'required',
             'contenido' => 'required',
-            'archivo' => 'file'
+            'adjunto' => 'file'
         ]);
 
         $post = new Post();
         $post->titulo = $request['titulo'];
         $post->contenido = $request['contenido'];
-        if (isset ($request['archivo'])) {
-            $post->archivo = $request['archivo'];
+        if ($request->file('adjunto') !== null ) {
+            $ahora = new \DateTime;
+            $ahora = $ahora->format("YmdHis");
+            $nombre = \Str::slug(
+ pathinfo($request->file('adjunto')->getClientOriginalName(),PATHINFO_FILENAME)
+            );
+            $extension = $request->file('adjunto')->getClientOriginalExtension();
+            $nombre = $ahora.'_'.$nombre.".".$extension;
+            $path = $request->file('adjunto')->storeAs('adjuntos', $nombre);
+            dd($path);
+            $post->archivo = $request['adjunto'];
         }
         $post->autor()->associate(Auth::user()->docentes);
         $post->save();

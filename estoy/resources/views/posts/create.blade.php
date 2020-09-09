@@ -25,12 +25,12 @@
     </div>
 @endif
 
-<form action="{{ route('posts.store') }}" method="POST">
+<form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
      <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
-                <strong>Titulo:</strong>
+                <label for="titulo"><strong>Titulo:</strong></label>
                 <input type="text" name="titulo" class="form-control" placeholder="Título" required>
                 <p class="small text-danger">(Título descriptivo. Evitá "Información importante", "Dato interesante", etc)</p>
             </div>
@@ -38,11 +38,19 @@
 
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
-                <strong>Contenido:</strong>
+                <label for="contenido"><strong>Contenido:</strong></label>
                 <textarea name="contenido" placeholder="Contenido de la novedad" class="form-control" required></textarea>
             </div>
         </div>
 
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-group">
+                <label for="adjunto"><strong>Adjunto:</strong></label>
+                <input type="file" 
+                accept="audio/*,image/*,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.odt,.ods,.odp"
+                name="adjunto" class="form-control">
+            </div>
+        </div>
 
         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
                 <button type="submit" class="btn btn-primary">Enviar</button>

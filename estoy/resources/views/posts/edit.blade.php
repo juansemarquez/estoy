@@ -48,6 +48,14 @@
             </div>
         </div>
 
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-group">
+                <label for="adjunto"><strong>Adjunto:</strong></label>
+                <input type="file" name="adjunto" class="form-control"
+                accept="audio/*,image/*,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.odt,.ods,.odp">
+            </div>
+        </div>
+
 
         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
                 <button type="submit" class="btn btn-primary">Enviar</button>
