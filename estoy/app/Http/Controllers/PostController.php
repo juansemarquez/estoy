@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\Adjunto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -47,20 +48,35 @@ class PostController extends Controller
         $post = new Post();
         $post->titulo = $request['titulo'];
         $post->contenido = $request['contenido'];
+        $post->autor()->associate(Auth::user()->docentes);
+        $post->save();
         if ($request->file('adjunto') !== null ) {
+            //Armar el nombre del archivo:
             $ahora = new \DateTime;
             $ahora = $ahora->format("YmdHis");
             $nombre = \Str::slug(
  pathinfo($request->file('adjunto')->getClientOriginalName(),PATHINFO_FILENAME)
             );
             $extension = $request->file('adjunto')->getClientOriginalExtension();
-            $nombre = $ahora.'_'.$nombre.".".$extension;
-            $path = $request->file('adjunto')->storeAs('adjuntos', $nombre);
-            dd($path);
-            $post->archivo = $request['adjunto'];
+            $guardar_como = $ahora.'_'.$nombre.".".$extension;
+
+            //Guardar archivo
+            try {
+              $path = $request->file('adjunto')->storeAs('adjuntos', $guardar_como);
+              $post->archivo = $request['adjunto'];
+            }
+            catch(\Exception $e) {
+                return redirect()->route('posts.index')
+                        ->with('error','Novedad guardada. Error con el archivo adjunto.');
+            }
+
+            //Guardar en la BD:
+            $adjunto = new Adjunto();
+            $adjunto->nombre_original = $nombre . "." . $extension;
+            $adjunto->guardado_como = $guardar_como;
+            $adjunto->post()->associate($post);
+            $adjunto->save();                        
         }
-        $post->autor()->associate(Auth::user()->docentes);
-        $post->save();
 
         return redirect()->route('posts.index')
                         ->with('success','Novedad publicada con éxito.');
@@ -76,6 +92,7 @@ class PostController extends Controller
     {
         //$this->authorize('view', $post);
         $post->load('autor');
+        $post->load('adjuntos');
         //TODO: Cargar comentarios y notificaciones
         // $alumno->load(['comunicaciones.docente',
         //            'comunicaciones' => function($q) {

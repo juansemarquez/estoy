@@ -13,9 +13,23 @@
                     {{ $post->created_at->format("d/m/Y") }}</h4>
                 <a class="btn btn-primary" href="{{ route('posts.index') }}">Volver</a>
                 </div>
-    </div>
+                </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 p-5" style="white-space: pre-wrap; text-align: justify">{{$post->contenido}}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 p-5"> 
+            <ul>
+            @forelse ($post->adjuntos as $adjunto)
+                <li>
+<a href="{{Storage::url('app/adjuntos/'.$adjunto->guardado_como, now()->addMinutes(10))}}">
+                    {{ $adjunto->nombre_original}}
+                </a></li>
+            @empty
+                <li>No hay adjuntos</li>
+            @endforelse
+            </ul>
+            </div>
         </div>
         <div class="text-center">
             <a class="btn btn-primary d-inline" href="{{ route('posts.edit',$post->id)}}">Editar</a>
