@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    protected $fillable = ['titulo','contenido','archivo'];
+    protected $fillable = ['titulo','contenido'];
 
     public function autor() {
         return $this->belongsTo(Docentes::class, 'autor_id');

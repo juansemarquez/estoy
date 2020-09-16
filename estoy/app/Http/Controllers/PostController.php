@@ -42,7 +42,7 @@ class PostController extends Controller
         $request->validate([
             'titulo' => 'required',
             'contenido' => 'required',
-            'adjunto' => 'file'
+            //'adjunto' => 'file'
         ]);
 
         $post = new Post();
@@ -50,20 +50,20 @@ class PostController extends Controller
         $post->contenido = $request['contenido'];
         $post->autor()->associate(Auth::user()->docentes);
         $post->save();
-        if ($request->file('adjunto') !== null ) {
+        foreach ($request->file('adjunto') as $adjunto ) {
             //Armar el nombre del archivo:
             $ahora = new \DateTime;
             $ahora = $ahora->format("YmdHis");
             $nombre = \Str::slug(
- pathinfo($request->file('adjunto')->getClientOriginalName(),PATHINFO_FILENAME)
+ pathinfo($adjunto->getClientOriginalName(),PATHINFO_FILENAME)
             );
-            $extension = $request->file('adjunto')->getClientOriginalExtension();
+            $extension = $adjunto->getClientOriginalExtension();
             $guardar_como = $ahora.'_'.$nombre.".".$extension;
 
             //Guardar archivo
             try {
-              $path = $request->file('adjunto')->storeAs('adjuntos', $guardar_como);
-              $post->archivo = $request['adjunto'];
+              $path = $adjunto->storeAs('adjuntos', $guardar_como);
+              //$post->archivo[] = $adjunto;
             }
             catch(\Exception $e) {
                 return redirect()->route('posts.index')
@@ -71,11 +71,11 @@ class PostController extends Controller
             }
 
             //Guardar en la BD:
-            $adjunto = new Adjunto();
-            $adjunto->nombre_original = $nombre . "." . $extension;
-            $adjunto->guardado_como = $guardar_como;
-            $adjunto->post()->associate($post);
-            $adjunto->save();                        
+            $adj= new Adjunto();
+            $adj->nombre_original = $nombre . "." . $extension;
+            $adj->guardado_como = $guardar_como;
+            $adj->post()->associate($post);
+            $adj->save();                        
         }
 
         return redirect()->route('posts.index')

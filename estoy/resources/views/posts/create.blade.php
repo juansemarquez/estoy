@@ -45,10 +45,10 @@
 
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
-                <label for="adjunto"><strong>Adjunto:</strong></label>
-                <input type="file" 
+                <label for="adjunto[]"><strong>Adjunto:</strong></label>
+                <input type="file" multiple
                 accept="audio/*,image/*,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.odt,.ods,.odp"
-                name="adjunto" class="form-control">
+                name="adjunto[]" class="form-control">
             </div>
         </div>
 
