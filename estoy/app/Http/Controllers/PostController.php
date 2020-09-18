@@ -6,6 +6,7 @@ use App\Post;
 use App\Adjunto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; 
 
 class PostController extends Controller
 {
@@ -44,38 +45,40 @@ class PostController extends Controller
             'contenido' => 'required',
             //'adjunto' => 'file'
         ]);
-
+ 
         $post = new Post();
         $post->titulo = $request['titulo'];
         $post->contenido = $request['contenido'];
         $post->autor()->associate(Auth::user()->docentes);
         $post->save();
-        foreach ($request->file('adjunto') as $adjunto ) {
-            //Armar el nombre del archivo:
-            $ahora = new \DateTime;
-            $ahora = $ahora->format("YmdHis");
-            $nombre = \Str::slug(
- pathinfo($adjunto->getClientOriginalName(),PATHINFO_FILENAME)
-            );
-            $extension = $adjunto->getClientOriginalExtension();
-            $guardar_como = $ahora.'_'.$nombre.".".$extension;
+        if(isset($request['adjunto'])) {
+            foreach ($request->file('adjunto') as $adjunto ) {
+                //Armar el nombre del archivo:
+                $ahora = new \DateTime;
+                $ahora = $ahora->format("YmdHis");
+                $nombre = \Str::slug(
+                     pathinfo($adjunto->getClientOriginalName(),PATHINFO_FILENAME)
+                );
+                $extension = $adjunto->getClientOriginalExtension();
+                $guardar_como = $ahora.'_'.$nombre.".".$extension;
 
-            //Guardar archivo
-            try {
-              $path = $adjunto->storeAs('adjuntos', $guardar_como);
-              //$post->archivo[] = $adjunto;
-            }
-            catch(\Exception $e) {
-                return redirect()->route('posts.index')
-                        ->with('error','Novedad guardada. Error con el archivo adjunto.');
-            }
+                //Guardar archivo
+                try {
+                  $path = $adjunto->storeAs('adjuntos', $guardar_como);
+                  //$post->archivo[] = $adjunto;
+                }
+                catch(\Exception $e) {
+                    return redirect()->route('posts.index')
+                            ->with('error','Novedad guardada. Error con el archivo adjunto.');
+                }
 
-            //Guardar en la BD:
-            $adj= new Adjunto();
-            $adj->nombre_original = $nombre . "." . $extension;
-            $adj->guardado_como = $guardar_como;
-            $adj->post()->associate($post);
-            $adj->save();                        
+                //Guardar en la BD:
+                $adj= new Adjunto();
+                $adj->nombre_original = $nombre . "." . $extension;
+                $adj->guardado_como = $guardar_como;
+                $adj->post()->associate($post);
+                $adj->save();                        
+            }
         }
 
         return redirect()->route('posts.index')
@@ -125,16 +128,39 @@ class PostController extends Controller
         $request->validate([
             'titulo' => 'required',
             'contenido' => 'required',
-            'archivo' => 'file'
         ]);
 
-        $post = new Post();
+        //$post = new Post();
         $post->titulo = $request['titulo'];
         $post->contenido = $request['contenido'];
-        if (isset ($request['archivo'])) {
-            $post->archivo = $request['archivo'];
+        if(isset($request['adjunto'])) {
+            foreach ( $request->file('adjunto') as $adjunto ) {
+                $ahora = new \DateTime;
+                $ahora = $ahora->format("YmdHis");
+                $nombre = \Str::slug(
+                  pathinfo($adjunto->getClientOriginalName(),PATHINFO_FILENAME)
+                );
+                $extension = $adjunto->getClientOriginalExtension();
+                $guardar_como = $ahora.'_'.$nombre.".".$extension;
+
+                //Guardar archivo
+                try {
+                  $path = $adjunto->storeAs('adjuntos', $guardar_como);
+                  //$post->archivo[] = $adjunto;
+                }
+                catch(\Exception $e) {
+                    return redirect()->route('posts.index')
+                            ->with('error','Novedad guardada. Error con el archivo adjunto.');
+                }
+
+                //Guardar en la BD:
+                $adj= new Adjunto();
+                $adj->nombre_original = $nombre . "." . $extension;
+                $adj->guardado_como = $guardar_como;
+                $adj->post()->associate($post);
+                $adj->save();                        
+            } 
         }
-        $post->autor()->associate(Auth::user()->docentes);
         $post->save();
 
         return redirect()->route('posts.index')
@@ -154,4 +180,14 @@ class PostController extends Controller
         return redirect()->route('posts.index')
                         ->with('success','Novedad eliminada con éxito');  
     }
+
+    public function borrar_adjunto($id_adjunto) {
+        $adjunto = Adjunto::find($id_adjunto);
+        Storage::delete('adjuntos/'.$adjunto->guardado_como);
+        $adjunto->delete();
+        //FIXME: Hacer esto por ajax.
+        return redirect()->route('posts.index')
+                        ->with('success','Adjunto eliminado con éxito');  
+    }
+
 }
