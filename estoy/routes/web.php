@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'HomeController@index')->name('home')->middleware('auth');
 Route::post('/crear_comunicacion', 'ComunicacionController@store2')->name('crear_comunicacion')->middleware('auth');
+Route::get('/crear_grupal', 'ComunicacionController@create_grupal')->name('crear_grupal')->middleware('auth');
+Route::post('/store_grupal', 'ComunicacionController@store_grupal')->name('store_grupal')->middleware('auth');
 Auth::routes(['register' => false]);
 //Auth::routes();
 

@@ -27,12 +27,14 @@ class HomeController extends Controller
         $docente = Auth::user()->docentes()->first();
         if (!$docente) { return "No sos docente!"; }
         if (Auth::user()->hasRole('directivo')) {
+            $cursos = \App\Curso::all();
             $alumnos= \App\Alumno::with('curso')->orderBy('apellido')->get();
         }
         else {
             //FIXME: Debe haber una manera mejor
             $id_cursos = array();
-            foreach ($docente->cursos as $curso) {
+            $cursos = $docente->cursos;
+            foreach ($cursos as $curso) {
                 $id_cursos[] = $curso->id;
             }
             $alumnos = \App\Alumno::whereIn('curso_id',$id_cursos)->with('curso')->orderBy('apellido')->get();
@@ -48,6 +50,7 @@ class HomeController extends Controller
         $hoy = (new \DateTime())->format("Y-m-d");
         return view('home', [
             'nombre' => $docente->nombre,
+            'cursos' => $cursos,
             'alumnos'=>$datalist,
             'hoy'=>$hoy,
             'comus'=>$comus

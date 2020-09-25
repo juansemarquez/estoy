@@ -50,6 +50,20 @@
                     </form>
                     </div>
                 </div><br>
+
+                <div class="text-center">
+                    <form action="{{route('crear_grupal')}}" method="get">
+                        <label for="curso">Cargar varios alumnos de: </label>
+                        <select name="curso">
+                            @foreach ($cursos as $curso)
+                                <option value="{{$curso->id}}">{{$curso->descripcion}}</option>
+                            @endforeach
+                        </select>
+                        <input type="submit" value="Cargar">
+
+                    </form>
+                    
+                </div>
                 <div class="text-center">
                     <a class="btn btn-primary" href="{{route('comunicaciones.index')}}">Ver todas las comunicaciones</a>
                 </div><br>

@@ -109,6 +109,54 @@ class ComunicacionController extends Controller
 
     }
 
+    public function create_grupal(Request $request)
+    {
+        $request->validate([
+            'curso' => 'required|numeric'
+        ]);
+        $curso = Curso::find($request->curso);
+        $curso->load('alumnos');
+        $hoy = new \DateTime(date("Y-m-d"));
+        return view('comunicaciones.create_grupal',
+                    ['curso'=>$curso, 'hoy'=>$hoy->format("Y-m-d")]);
+    }
+
+    public function store_grupal(Request $request)
+    {
+        $request->validate([
+            'alumnos' => 'required',
+            'fecha' => 'date|required',
+        ]);
+        
+        $fecha = new \DateTime($request['fecha']);
+        $obs = isset($request['observaciones'])?$request['observaciones']:null; 
+
+        $alguno_ok = false;
+        $todos_ok = true;
+        foreach ($request['alumnos'] as $alumno_id) {
+            $alumno = Alumno::find($alumno_id);
+            if ($this->guardar_comunicacion($fecha, $alumno, $obs)) {
+                $alguno_ok = true;
+            }
+            else {
+                $todos_ok = false;
+            }
+        }
+        if ($alguno_ok && $todos_ok) {
+            return redirect()->route('home')
+                             ->with('success','Comunicación guardada con éxito.');
+        }
+        elseif ($alguno_ok) {
+            return redirect()->route('home')
+->with('success','Comunicación guardada (algunos alumnos ya tenían comunicaciones con ese docente ese día.');
+        }
+        else {
+            return redirect()->route('home')->with('error',
+'Ya había una comunicación guardada ese día entre esos estudiante y ese docente.');
+        }
+    }
+
+
     public function store2(Request $request)
     {
         $request->validate([
@@ -117,25 +165,35 @@ class ComunicacionController extends Controller
         ]);
         $alumno = \App\Alumno::findOrFail($request['id_alumno']);
         $fecha = new \DateTime($request['fecha']);
+        $obs = isset($request['observaciones'])?$request['observaciones']:null; 
+        if ($this->guardar_comunicacion($fecha, $alumno, $obs)) {
+            return redirect()->route('home')
+                             ->with('success','Comunicación guardada con éxito.');
+        }
+        else {
+            return redirect()->route('home')
+                             ->with('error',
+'Ya había una comunicación guardada ese día entre ese estudiante y ese docente.');
+        }
+    }
 
+    public function guardar_comunicacion(\DateTime $fecha, Alumno $alumno, $obs = 'null') {
         $c = new \App\Comunicacion();
         $c->fecha = $fecha;
-        $c->observaciones = isset($request['observaciones'])?$request['observaciones']:null;
+        $c->observaciones = $obs;
         $c->alumno()->associate($alumno);
-        $c->docente()->associate(Auth::user()->docentes()->first());
+        $c->docente()->associate(Auth::user()->docentes);
         $this->authorize('create',$c);
         if(\App\Comunicacion::where('alumno_id',$c->alumno->id)
             ->where('docente_id',$c->docente->id)
             ->where('fecha',$c->fecha)
             ->count() === 0 )  {
                 $c->save();
-        return redirect()->route('home')
-                        ->with('success','Comunicación guardada con éxito.');
+                return true;
         }
         else {
-            return redirect()->route('home')
-                        ->with('error','Ya había una comunicación guardada ese día entre ese estudiante y ese docente.');
-        }
+                return false;
+        } 
         
     }
 
