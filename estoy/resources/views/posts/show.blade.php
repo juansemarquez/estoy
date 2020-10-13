@@ -38,7 +38,33 @@
             @csrf
             <input type="submit" class="btn btn-danger" value="Eliminar">
             </form>
-    </div>
+        </div><hr> 
+        <div class="text-center">
+            @if ($leido)
+                <form action="{{route('lecturas.delete')}}" method="post">
+                    @method('DELETE')
+                    @csrf
+                    <input type="hidden" name="id_post" value="{{ $post->id }}">
+                    <input type="submit" class="btn btn-warning" value="Marcar como no leído">
+                </form>
+            @else
+                <form action="{{route('lecturas.store')}}" method="post">
+                    @csrf
+                    <input type="hidden" name="id_post" value="{{ $post->id }}">
+                    <input type="submit" class="btn btn-warning" value="Marcar como leído">
+                </form>
+            @endif
+        </div><hr>
+        <div class="text-center small">
+            <h5>Leido por: </h5>            
+            <ul>
+               @forelse( $post->lecturas as $docente )
+                    <li>{{$docente->nombre}} {{$docente->apellido}}</li>
+               @empty
+                    <li>Todavía no lo leyó nadie</li>
+               @endforelse
+            </ul>
+        </div>
     </div>
                 </div>
             </div>

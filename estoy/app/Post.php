@@ -16,4 +16,10 @@ class Post extends Model
     {
         return $this->hasMany(Adjunto::class);
     }
+
+    public function lecturas() 
+    {
+        return $this->belongsToMany('App\Docentes', 'lecturas', 'post_id',
+                                    'docentes_id');
+    }
 }

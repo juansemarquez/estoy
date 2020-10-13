@@ -51,6 +51,10 @@ class PostController extends Controller
         $post->contenido = $request['contenido'];
         $post->autor()->associate(Auth::user()->docentes);
         $post->save();
+        $lectura = new Lectura();
+        $lectura->docentes()->associate(Auth::user()->docentes);
+        $lectura->post()->associate(Auth::user()->docentes);        
+        $lectura->save();
         if(isset($request['adjunto'])) {
             foreach ($request->file('adjunto') as $adjunto ) {
                 //Armar el nombre del archivo:
@@ -96,12 +100,22 @@ class PostController extends Controller
         //$this->authorize('view', $post);
         $post->load('autor');
         $post->load('adjuntos');
-        //TODO: Cargar comentarios y notificaciones
+        $post->load('lecturas');
+        $leido = false;
+        foreach ($post->lecturas as $docente) {
+            if ($docente->id === Auth::user()->docentes->id) {
+                $leido = true;
+                break;
+            }
+        }
+
+        //TODO: Cargar comentarios
         // $alumno->load(['comunicaciones.docente',
         //            'comunicaciones' => function($q) {
         //        $q->orderBy('fecha','desc');
         //    }]);
-        return view('posts.show',compact('post'));
+        
+        return view('posts.show',['post' => $post, 'leido'=>$leido]);
     }
 
     /**
