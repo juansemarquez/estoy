@@ -31,6 +31,7 @@
             </ul>
             </div>
         </div>
+        @can('delete', $post)   
         <div class="text-center">
             <a class="btn btn-primary d-inline" href="{{ route('posts.edit',$post->id)}}">Editar</a>
             <form class="d-inline" method="post" action="{{ route('posts.destroy', $post->id)}}">
@@ -38,7 +39,8 @@
             @csrf
             <input type="submit" class="btn btn-danger" value="Eliminar">
             </form>
-        </div><hr> 
+        </div><hr>  
+        @endcan
         <div class="text-center">
             @if ($leido)
                 <form action="{{route('lecturas.delete')}}" method="post">

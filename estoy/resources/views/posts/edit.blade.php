@@ -26,6 +26,7 @@
         </ul>
     </div>
 @endif
+@can('edit',App\Post::class)
 <form action="{{ route('posts.update', $post->id ) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
@@ -75,10 +76,12 @@
         @endforelse
         </ul>    
 
+@else
+    <h3>No tenés autorización para modificar esta novedad</h3>
+@endcan
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 @endsection
