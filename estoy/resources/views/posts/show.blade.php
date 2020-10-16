@@ -19,6 +19,7 @@
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 p-5"> 
+            <h3 class="text-center">Archivos adjuntos</h3>
             <ul>
             @forelse ($post->adjuntos as $adjunto)
                 <li>
@@ -34,10 +35,12 @@
         @can('delete', $post)   
         <div class="text-center">
             <a class="btn btn-primary d-inline" href="{{ route('posts.edit',$post->id)}}">Editar</a>
-            <form class="d-inline" method="post" action="{{ route('posts.destroy', $post->id)}}">
+            <form class="d-inline" method="post" action="{{ route('posts.destroy', $post->id)}}"
+onsubmit="return confirm('¿Seguro que querés eliminar esta novedad?');">
             @method('DELETE')
             @csrf
             <input type="submit" class="btn btn-danger" value="Eliminar">
+
             </form>
         </div><hr>  
         @endcan
@@ -53,12 +56,12 @@
                 <form action="{{route('lecturas.store')}}" method="post">
                     @csrf
                     <input type="hidden" name="id_post" value="{{ $post->id }}">
-                    <input type="submit" class="btn btn-warning" value="Marcar como leído">
+                    <input type="submit" class="btn btn-success" value="Marcar como leído">
                 </form>
             @endif
         </div><hr>
         <div class="text-center small">
-            <h5>Leido por: </h5>            
+            <h5>Leído por: </h5>            
             <ul>
                @forelse( $post->lecturas as $docente )
                     <li>{{$docente->nombre}} {{$docente->apellido}}</li>

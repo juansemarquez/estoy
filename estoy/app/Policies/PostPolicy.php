@@ -53,7 +53,7 @@ class PostPolicy
      */
     public function update(User $user, Post $post)
     {
-        return ($user->docentes === $post->autor
+        return ($user->docentes->id === $post->autor->id
                 || $user->hasRole('directivo'));
     }
 
@@ -66,7 +66,7 @@ class PostPolicy
      */
     public function delete(User $user, Post $post)
     {
-        return ($user->docentes === $post->autor
+        return ($user->docentes->id === $post->autor->id
                 || $user->hasRole('directivo'));
     }
 
@@ -79,7 +79,7 @@ class PostPolicy
      */
     public function restore(User $user, Post $post)
     {
-        return ($user->docentes === $post->autor
+        return ($user->docentes->id === $post->autor->id
                 || $user->hasRole('directivo'));
     }
 
@@ -92,7 +92,7 @@ class PostPolicy
      */
     public function forceDelete(User $user, Post $post)
     {
-        return ($user->docentes === $post->autor
+        return ($user->docentes->id === $post->autor->id
                 || $user->hasRole('directivo'));
     }
 }

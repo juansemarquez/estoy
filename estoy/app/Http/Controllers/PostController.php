@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\Lectura;
 use App\Adjunto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +54,7 @@ class PostController extends Controller
         $post->save();
         $lectura = new Lectura();
         $lectura->docentes()->associate(Auth::user()->docentes);
-        $lectura->post()->associate(Auth::user()->docentes);        
+        $lectura->post()->associate($post);
         $lectura->save();
         if(isset($request['adjunto'])) {
             foreach ($request->file('adjunto') as $adjunto ) {
