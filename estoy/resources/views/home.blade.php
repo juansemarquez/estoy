@@ -22,6 +22,24 @@
                             <p>{{ $message }}</p>
                         </div>
                     @endif
+
+                    @if ($noLeidos == 0)
+                        <div class="alert alert-success text-center">
+                            <p>No tenés novedades sin leer
+                            - <a href="{{route('posts.index')}}">Ver novedades</a></p>
+                        </div>
+                    @else
+                        <div class="alert alert-warning text-center">
+                        @if($noLeidos == 1)
+                            <p>Tenés 1 novedad sin leer
+                            - <a href="{{route('posts.index')}}">Ver novedades</a></p>
+                        @else
+                            <p>Tenés {{$noLeidos}} novedades sin leer
+                            - <a href="{{route('posts.index')}}">Ver novedades</a></p>
+                        @endif                            
+                        </div>
+                    @endif
+                            
                     <form action="{{route('crear_comunicacion')}}" method="POST" class="text-center">
                        @csrf
                         <div class="form-group">

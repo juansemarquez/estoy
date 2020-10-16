@@ -7,14 +7,14 @@
                 <div class="card-header">Estoy</div>
 
                 <div class="card-body">
-            <div class="pull-left">
+            <div class="text-center">
                 <h2>Estoy - Novedades</h2>
             </div>
-            <!-- can('create',App\Post::class) -->
-            <div class="pull-right">
+            @can('create',App\Post::class)
+            <div class="text-center">
                 <a class="btn btn-success" href="{{ route('posts.create') }}">Crear novedad</a>
             </div>
-            <!-- endcan -->
+            @endcan
     </div>
     @if ($message = Session::get('success'))
         <div class="alert alert-success">
@@ -22,14 +22,24 @@
         </div>
     @endif
     @forelse ($posts as $unPost)
-    <div class="post">
-        <a href="{{route('posts.show',$unPost->id)}}">
+    <a href="{{route('posts.show',$unPost->id)}}" style="text-decoration: none" class="text-dark">
+    <div class="post my-1"
+        @if ( $lecturas[$unPost->id] )
+            style="background-color: #888888"
+        @else
+            style="background-color: #EEEEEE"
+        @endif
+        >
             <h1>{{$unPost->titulo}}</h1>
-        </a>
         <h4>Por {{$unPost->autor->nombre}} {{$unPost->autor->apellido}},
-        {{ $unPost->created_at->format("d/m/Y") }}</h4>
+        {{ $unPost->created_at->format("d/m/Y") }}
+        @if (! $lecturas[$unPost->id] )
+           <small><a href="{{route('posts.show',$unPost->id)}}"
+                class="text-secondary bg-warning p-2 rounded border">No leído</a></small>
+        @endif
+        </h4>
     </div>
-    <hr>
+    </a>
     @empty
     <div class="post">
         <h1>No hay ninguna novedad publicada</h1>

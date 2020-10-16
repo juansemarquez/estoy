@@ -19,7 +19,14 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::with('autor')->orderBy('created_at','desc')->simplePaginate(20);
-        return view('posts.index',['posts'=>$posts]);
+        $lecturas = array();
+        $d = Auth::user()->docentes;
+        foreach ($posts as $unPost) {
+            $lecturas[$unPost->id] =
+                $unPost->lecturas()->where('docentes_id',$d->id)->count() === 1;
+        }
+                
+        return view('posts.index',['posts'=>$posts, 'lecturas' => $lecturas]);
     }
 
     /**
