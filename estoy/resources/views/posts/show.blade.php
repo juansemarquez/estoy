@@ -60,6 +60,40 @@ onsubmit="return confirm('¿Seguro que querés eliminar esta novedad?');">
                 </form>
             @endif
         </div><hr>
+        <div class="text-center mx-4">
+            <h3>Comentarios</h3>
+            @forelse ($post->comentarios as $unComentario)
+                 <div class="text-justify mx-3">
+                     {{$unComentario->texto}}<br>
+                     <small>Por {{$unComentario->docentes->nombre}} 
+{{$unComentario->docentes->apellido}} el {{$unComentario->created_at->format("d-m-Y")}}</small>
+                 @can('forceDelete', $unComentario)   
+                 <form action="{{route('comentario.destroy')}}" method="post"
+onsubmit="return confirm('¿Seguro que querés eliminar este comentario?');">
+                    @method('DELETE')
+                    @csrf
+                    <input type="hidden" name="id_comentario" value="{{$unComentario->id}}">
+                    <small><input type="submit" value="Eliminar comentario"></small>
+                 </form>
+                 @endcan
+                 </div><hr>
+            @empty
+                <div>
+                    No hay comentarios
+                </div>
+            @endforelse
+        </div>
+        <div class="text-center">
+            <h3>Agregar un comentario</h3>
+            <form action="{{route('comentario.store')}}" method="post">
+                @csrf
+                <input type="hidden" name="id_post" value="{{ $post->id }}">
+                <textarea name="texto" rows="8" cols="40" placeholder="Tu comentario">
+                </textarea><br>
+                <input type="submit" class="btn btn-success" value="Enviar comentario">
+            </form>
+            
+        </div>
         <div class="text-center small">
             <h5>Leído por: </h5>            
             <ul>

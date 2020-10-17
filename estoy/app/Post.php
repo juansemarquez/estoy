@@ -22,4 +22,9 @@ class Post extends Model
         return $this->belongsToMany('App\Docentes', 'lecturas', 'post_id',
                                     'docentes_id');
     }
+
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class);
+    }
 }

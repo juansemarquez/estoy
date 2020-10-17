@@ -109,6 +109,7 @@ class PostController extends Controller
         $post->load('autor');
         $post->load('adjuntos');
         $post->load('lecturas');
+        $post->load('comentarios');
         $leido = false;
         foreach ($post->lecturas as $docente) {
             if ($docente->id === Auth::user()->docentes->id) {
