@@ -24,7 +24,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $docente = Auth::user()->docentes()->first();
+        $docente = Auth::user()->docentes;
         if (!$docente) { return "No sos docente!"; }
         if (Auth::user()->hasRole('directivo')) {
             $cursos = \App\Curso::all();
@@ -48,12 +48,18 @@ class HomeController extends Controller
         }
         
         $hoy = (new \DateTime())->format("Y-m-d");
+
+        // Obtener la cantidad de novedades no leidas:
+        $noLeidos = $docente->cantidad_posts_no_leidos();
+
+
         return view('home', [
             'nombre' => $docente->nombre,
             'cursos' => $cursos,
             'alumnos'=>$datalist,
             'hoy'=>$hoy,
-            'comus'=>$comus
+            'comus'=>$comus,
+            'noLeidos'=>$noLeidos
         ]);
     }
     public function store(Request $request)

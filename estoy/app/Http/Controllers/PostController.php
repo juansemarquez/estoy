@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\Lectura;
+use App\Adjunto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; 
 
 class PostController extends Controller
 {
@@ -16,7 +19,14 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::with('autor')->orderBy('created_at','desc')->simplePaginate(20);
-        return view('posts.index',['posts'=>$posts]);
+        $lecturas = array();
+        $d = Auth::user()->docentes;
+        foreach ($posts as $unPost) {
+            $lecturas[$unPost->id] =
+                $unPost->lecturas()->where('docentes_id',$d->id)->count() === 1;
+        }
+                
+        return view('posts.index',['posts'=>$posts, 'lecturas' => $lecturas]);
     }
 
     /**
@@ -41,17 +51,47 @@ class PostController extends Controller
         $request->validate([
             'titulo' => 'required',
             'contenido' => 'required',
-            'archivo' => 'file'
+            //'adjunto' => 'file'
         ]);
-
+ 
         $post = new Post();
         $post->titulo = $request['titulo'];
         $post->contenido = $request['contenido'];
-        if (isset ($request['archivo'])) {
-            $post->archivo = $request['archivo'];
-        }
         $post->autor()->associate(Auth::user()->docentes);
         $post->save();
+        $lectura = new Lectura();
+        $lectura->docentes()->associate(Auth::user()->docentes);
+        $lectura->post()->associate($post);
+        $lectura->save();
+        if(isset($request['adjunto'])) {
+            foreach ($request->file('adjunto') as $adjunto ) {
+                //Armar el nombre del archivo:
+                $ahora = new \DateTime;
+                $ahora = $ahora->format("YmdHis");
+                $nombre = \Str::slug(
+                     pathinfo($adjunto->getClientOriginalName(),PATHINFO_FILENAME)
+                );
+                $extension = $adjunto->getClientOriginalExtension();
+                $guardar_como = $ahora.'_'.$nombre.".".$extension;
+
+                //Guardar archivo
+                try {
+                  $path = $adjunto->storeAs('adjuntos', $guardar_como);
+                  //$post->archivo[] = $adjunto;
+                }
+                catch(\Exception $e) {
+                    return redirect()->route('posts.index')
+                            ->with('error','Novedad guardada. Error con el archivo adjunto.');
+                }
+
+                //Guardar en la BD:
+                $adj= new Adjunto();
+                $adj->nombre_original = $nombre . "." . $extension;
+                $adj->guardado_como = $guardar_como;
+                $adj->post()->associate($post);
+                $adj->save();                        
+            }
+        }
 
         return redirect()->route('posts.index')
                         ->with('success','Novedad publicada con éxito.');
@@ -67,12 +107,24 @@ class PostController extends Controller
     {
         //$this->authorize('view', $post);
         $post->load('autor');
-        //TODO: Cargar comentarios y notificaciones
+        $post->load('adjuntos');
+        $post->load('lecturas');
+        $post->load('comentarios');
+        $leido = false;
+        foreach ($post->lecturas as $docente) {
+            if ($docente->id === Auth::user()->docentes->id) {
+                $leido = true;
+                break;
+            }
+        }
+
+        //TODO: Cargar comentarios
         // $alumno->load(['comunicaciones.docente',
         //            'comunicaciones' => function($q) {
         //        $q->orderBy('fecha','desc');
         //    }]);
-        return view('posts.show',compact('post'));
+        
+        return view('posts.show',['post' => $post, 'leido'=>$leido]);
     }
 
     /**
@@ -99,16 +151,39 @@ class PostController extends Controller
         $request->validate([
             'titulo' => 'required',
             'contenido' => 'required',
-            'archivo' => 'file'
         ]);
 
-        $post = new Post();
+        //$post = new Post();
         $post->titulo = $request['titulo'];
         $post->contenido = $request['contenido'];
-        if (isset ($request['archivo'])) {
-            $post->archivo = $request['archivo'];
+        if(isset($request['adjunto'])) {
+            foreach ( $request->file('adjunto') as $adjunto ) {
+                $ahora = new \DateTime;
+                $ahora = $ahora->format("YmdHis");
+                $nombre = \Str::slug(
+                  pathinfo($adjunto->getClientOriginalName(),PATHINFO_FILENAME)
+                );
+                $extension = $adjunto->getClientOriginalExtension();
+                $guardar_como = $ahora.'_'.$nombre.".".$extension;
+
+                //Guardar archivo
+                try {
+                  $path = $adjunto->storeAs('adjuntos', $guardar_como);
+                  //$post->archivo[] = $adjunto;
+                }
+                catch(\Exception $e) {
+                    return redirect()->route('posts.index')
+                            ->with('error','Novedad guardada. Error con el archivo adjunto.');
+                }
+
+                //Guardar en la BD:
+                $adj= new Adjunto();
+                $adj->nombre_original = $nombre . "." . $extension;
+                $adj->guardado_como = $guardar_como;
+                $adj->post()->associate($post);
+                $adj->save();                        
+            } 
         }
-        $post->autor()->associate(Auth::user()->docentes);
         $post->save();
 
         return redirect()->route('posts.index')
@@ -128,4 +203,14 @@ class PostController extends Controller
         return redirect()->route('posts.index')
                         ->with('success','Novedad eliminada con éxito');  
     }
+
+    public function borrar_adjunto($id_adjunto) {
+        $adjunto = Adjunto::find($id_adjunto);
+        Storage::delete('adjuntos/'.$adjunto->guardado_como);
+        $adjunto->delete();
+        //FIXME: Hacer esto por ajax.
+        return redirect()->route('posts.index')
+                        ->with('success','Adjunto eliminado con éxito');  
+    }
+
 }

@@ -26,7 +26,8 @@
         </ul>
     </div>
 @endif
-<form action="{{ route('posts.update', $post->id ) }}" method="POST">
+@can('edit',App\Post::class)
+<form action="{{ route('posts.update', $post->id ) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
 
@@ -47,6 +48,13 @@
                 class="form-control" required>{{ $post->contenido }}</textarea>
             </div>
         </div>
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-group">
+                <label for="adjunto[]"><strong>Agregar adjuntos:</strong></label>
+                <input type="file" name="adjunto[]" class="form-control" multiple
+                accept="audio/*,image/*,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.odt,.ods,.odp">
+            </div>
+        </div>
 
 
         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
@@ -56,10 +64,24 @@
     </div>
 
 </form>
+        <ul>
+        @forelse ($post->adjuntos as $adjunto)
+            <li>{{$adjunto->nombre_original}}
+            <form method="post" action="{{route('borrar_adjunto',$adjunto->id)}}" class="d-inline">
+                @csrf
+                <input type="submit" value="Eliminar" class="btn btn-danger">
+            </form></li>
+        @empty
+            <li>No hay adjuntos para esta novedad</li>
+        @endforelse
+        </ul>    
+
+@else
+    <h3>No tenés autorización para modificar esta novedad</h3>
+@endcan
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 @endsection

@@ -25,5 +25,12 @@ Route::resource('cursos','CursoController')->middleware('auth');
 Route::resource('docentes','DocentesController')->middleware('auth');
 Route::resource('alumnos','AlumnoController')->middleware('auth');
 Route::resource('comunicaciones','ComunicacionController')->middleware('auth');
+Route::post('posts/borrar_adjunto/{id_adjunto}','PostController@borrar_adjunto')->name('borrar_adjunto')->middleware('auth');
 Route::resource('posts','PostController')->middleware('auth');
 Route::post('/comunicaciones_desde', 'ComunicacionController@listado_desde')->name('comunicaciones.listado')->middleware('auth');
+Route::post('/lecturas', 'LecturaController@store')->name('lecturas.store')->middleware('auth');
+Route::delete('/lecturas', 'LecturaController@destroy')->name('lecturas.delete')->middleware('auth');
+Route::post('/comentarios', 'ComentarioController@store')
+                        ->name('comentario.store')->middleware('auth');
+Route::delete('/comentarios', 'ComentarioController@destroy')
+    ->name('comentario.destroy')->middleware('auth');

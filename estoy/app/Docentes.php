@@ -24,4 +24,9 @@ class Docentes extends Model
    public function comunicaciones() {
        return $this->hasMany('App\Comunicacion', 'docente_id');
    }
+
+   public function cantidad_posts_no_leidos() {
+       return \App\Post::count() - \App\Lectura::where('docentes_id',$this->id)->count();
+   }
+
 }
