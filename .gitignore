@@ -1,0 +1,15 @@
+/estoy/node_modules
+/public_html/estoy/hot
+/public_html/estoy/storage
+/estoy/storage/*.key
+/estoy/vendor
+/estoy/.env
+/estoy/.envLOCAL
+/estoy/.envHOSTING
+/estoy/.env.backup
+/estoy/.phpunit.result.cache
+/estoy/Homestead.json
+/estoy/Homestead.yaml
+/estoy/npm-debug.log
+/estoy/yarn-error.log
+/backups_bd/
