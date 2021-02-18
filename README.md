@@ -13,7 +13,7 @@ Este sistema permite sumar más información para que el equipo docente pueda
 elaborar estrategias de acercamiento a los estudiantes.
 
 ## Capturas de pantalla
-![Captura de pantalla 1](../assets/estoy1.png)
+![Captura de pantalla 1](../assets/estoy1b.png)
 
 ![Captura de pantalla 2](../assets/estoy2.png)
 
